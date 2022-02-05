@@ -1,0 +1,53 @@
+/ Preparation du shield ethernet et le resaux
+// j'inclu les protocole de communication qui vont me servir pour etablier une connexion
+// on les met dans les tableaux de variables de type "byte".
+#include <SPI.h> // Protocole SPI
+#include <Ethernet.h> //Protocole pour l'Ethernet
+
+// J'attribut une adrresse ip et une a adresse mac a mon sheild ethernet
+byte mac[] = {0x90, 0xA2, 0xDA, 0x0F, 0xBC, 0xC9}; // Adresse mac
+byte ip[] = {192, 168, 1, 65}; //adresse ip
+//
+EthernetServer serveur(80); // déclare l'objet serveur au port d'écoute 80
+
+
+
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin (9600); // initialisation de la communication en serie
+  Ethernet.begin (mac, ip); //initialisatio de la communication Ethernet
+  Serial.print("\nLe serveur est sur l'adresse : ");
+  Serial.println(Ethernet.localIP()); //on affiche l'adresse IP de la connexion
+  serveur.begin(); // démarre l'écoute
+}
+
+
+void loop() {
+  EthernetClient client = serveur.available(); //on écoute le port
+  if (client) { //si client connecté
+    Serial.println("Client en ligne\n"); //on le dit...
+    if (client.connected()) { // si le client est en connecté
+      while (client.available()) { // tant qu'il a des infos à transmettre
+        char c=client.read(); // on lit le caractère  
+        Serial.write(c);// on l'écrit sur le moniteur série
+        delay(1); //délai de lecture
+      }
+      //réponse au client
+      client.println("<!DOCTYPE HTML>"); // informe le navigateur du type de document à afficher
+      client.println("<html>");
+    client.println("<head>");                                       
+    client.println("<title>Redirection</title>");                   
+    client.println("</head>");                   
+    client.println("<body>");                   
+    client.println("<a href='arduinoPHP.php'>Rediger...</a> ");                  
+    client.println("</body>"); 
+    client.println("</html>"); //fin du code html
+
+
+      
+      client.stop(); //on déconnecte le client
+      Serial.println("Fin de communication avec le client");
+    }
+  }
+}
