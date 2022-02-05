@@ -1,4 +1,4 @@
-# Syst-me-de-Location-Velos
+# Systme-de-Location-Velos
 Projet STI2D SIN Système de Location Velos
 
 Création et gestion des modules d'une borne (prototype)
